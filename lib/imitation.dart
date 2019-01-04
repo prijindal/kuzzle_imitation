@@ -52,6 +52,42 @@ class ImitationServer {
     return json.encode(response);
   }
 
+  void updateData(dynamic actualData) {
+    switch (actualData['controller']) {
+      case 'index':
+        switch (actualData['action']) {
+          case 'list':
+            final List<dynamic> indexes = actualData['result']['indexes'];
+            for (final key in indexes) {
+              if (!imitationDatabase.db.keys.contains(key)) {
+                imitationDatabase.db[key] = <String, dynamic>{};
+              }
+            }
+            break;
+          default:
+        }
+        break;
+      case 'collection':
+        switch (actualData['action']) {
+          case 'list':
+            final List<dynamic> collections =
+                actualData['result']['collections'];
+            final String index = actualData['index'];
+            for (final collection in collections) {
+              if (!imitationDatabase.db[index].keys
+                  .contains(collection['name'])) {
+                imitationDatabase.db[index]
+                    [collection['name']] = <String, dynamic>{};
+              }
+            }
+            break;
+          default:
+        }
+        break;
+      default:
+    }
+  }
+
   Map<String, dynamic> _admin(jsonRequest) {
     final response = <String, dynamic>{};
 
@@ -185,12 +221,9 @@ class ImitationServer {
         break;
       case 'list':
         response['result'] = <String, dynamic>{
-          'collections': <Map<String, dynamic>>[
-            <String, dynamic>{
-              'name': 'posts',
-              'type': 'realtime',
-            },
-          ]
+          'collections': imitationDatabase.db[jsonRequest['index']].keys
+              .map((name) => {'name': name, 'type': 'stored'})
+              .toList(),
         };
         break;
       case 'scrollSpecifications':
@@ -486,7 +519,9 @@ class ImitationServer {
   }
 
   Map<String, dynamic> _ms(jsonRequest) {
-    final response = <String, dynamic>{};
+    final response = <String, dynamic>{
+      'controller': jsonRequest['controller'],
+    };
 
     final jsonBody = jsonRequest['body'];
     final String action = jsonRequest['action'];
