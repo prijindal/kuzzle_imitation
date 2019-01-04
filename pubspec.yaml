@@ -1,0 +1,19 @@
+name: kuzzle_imitation
+version: 0.0.1
+
+description: A library to communicate with kuzzle API
+author: Priyanshu Jindal<priyanshujindal1995@gmail.com>
+homepage: https://github.com/prijindal/kuzzle_dart
+
+environment:
+  sdk: ">=2.0.0-dev.68.0 <3.0.0"
+
+dependencies:
+  kuzzle:
+    path: ../kuzzle_dart
+    # git: git://github.com/prijindal/kuzzle_dart
+  geohash: any
+  uuid: any
+
+dev_dependencies:
+  test: any
